@@ -1,0 +1,24 @@
+
+.board {
+  display: grid;
+  margin: auto;
+  padding: 5px;
+  max-width: 685px;
+  background-color: #917977;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+.dark{ background-color: #bf4b41;}
+.light{ background-color: pink;}
+
+.tile {
+  width: 80px;
+  height: 80px;
+}
+.tile:hover {
+  background-color: goldenrod;
+}
+.tile:active {
+  background-color: blue;
+}
+
