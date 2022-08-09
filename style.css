@@ -21,4 +21,6 @@
 .tile:active {
   background-color: blue;
 }
-
+.playerMove {
+  background-color: blue;
+}
