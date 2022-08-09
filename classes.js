@@ -1,4 +1,4 @@
-import {gameBoard, playerMoves} from "./app.js";
+import { rows, cols, gameBoard, playerMoves } from "./app.js";
 
 export class Tile {
   #row
@@ -16,7 +16,7 @@ export class Tile {
   get col() { return this.#col; }
   get piece() { return this.#piece; }
   get id() { return this.#id; }
-  
+
   set row(r) { this.#row = r; }
   set col(c) { this.#col = c; }
   set piece(p) { this.#piece = p; }
@@ -26,23 +26,23 @@ export class Tile {
   }
 }
 
-/* movement */
+/* movement functions */
 function outOfBounds(x) {
   return (x > 7 || x < 0);
 }
 
 function testMove(row, col) {
-  if(outOfBounds(row) || outOfBounds(col)) return;
-    
-  const resident = gameBoard[row][col].piece();
-  if(resident === null) {
+  if (outOfBounds(row) || outOfBounds(col)) return;
+
+  const resident = gameBoard[row][col].piece;
+  if (resident === null) {
     playerMoves.push(gameBoard[row][col]);
     return;
   }
-  if(resident.alliance() !== this.alliance())
+  if (resident.alliance() !== this.alliance())
     playerMoves.push(gameBoard[row][col]);
-  return;
 }
+
 
 /* pieces */
 export class Pawn {
@@ -50,7 +50,7 @@ export class Pawn {
   #alliance
   #tile
   #icon
-  constructor (tile, color) {
+  constructor(tile, color) {
     this.#name = 'pawn';
     this.#tile = tile;
     this.#alliance = color;
@@ -61,33 +61,32 @@ export class Pawn {
   get icon() { return this.#icon; }
   get tile() { return this.#tile; }
 
-  set tile(t) { this.#tile = t};
+  set tile(t) { this.#tile = t };
 
   toString() {
     return `${this.name}:${this.alliance}`
   }
-  getMoves() {
-    playerMoves = [];
-    const yPosition = this.tile().col().indexOf();
-    const xPosition = this.tile().row().indexOf();
-    const direction = this.alliance() == 'dark' ? 1 : -1;
 
-    if(this.tile().row() == 7 && this.alliance == 'dark') {
+  getMoves() {
+    const yPosition = cols.indexOf(this.tile.col);
+    const xPosition = rows.indexOf(this.tile.row);
+    const direction = this.alliance == 'dark' ? 1 : -1;
+
+    if (outOfBounds(xPosition + direction)) return;
+
+    if (this.tile.row == 7 && this.alliance == 'dark') {
       testMove(xPosition + (direction * 2), yPosition);
     }
-    if(this.tile().row() == 2 && this.alliance == 'light') {
+    if (this.tile.row == 2 && this.alliance == 'light') {
       testMove(xPosition + (direction * 2), yPosition);
     }
     testMove(xPosition + direction, yPosition);
-    checkAttack(xPosition, yPosition, direction);
-  }
-  checkAttack(xPos, yPos, d) {
-    if(outOfBounds(xPos + d)) return;
 
-    if(!outOfBounds(yPos + 1) && gameBoard[xPos][yPos + 1].piece() !== null)
-      testMove(xPos + d, yPos + 1);
-    if(!outOfBounds(yPos - 1) && gameBoard[xPos][yPos - 1].piece() !== null)
-      testMove(xPos + d, yPos - 1);
-    return;
+    // check attack moves
+    if (!outOfBounds(yPosition + 1) && !gameBoard[xPosition][yPosition + 1].piece === null)
+      testMove(xPosition + direction, yPosition + 1);
+
+    if (!outOfBounds(yPosition - 1) && !gameBoard[xPosition][yPosition - 1].piece === null)
+      testMove(xPosition + direction, yPosition - 1);
   }
 }
