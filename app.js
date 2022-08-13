@@ -4,6 +4,7 @@ import {Pawn, Tile} from "./classes.js";
 export const rows = [8, 7, 6, 5, 4, 3, 2, 1];
 export const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 export let playerMoves = [];
+let activePiece = null;
 
 /* where the game actually happens, to be reflected in UI */
 export const gameBoard = new Array(8);
@@ -60,15 +61,11 @@ function updateUser(){
       userTile.style.backgroundImage = `url('${piece.icon}')`;
     }
   }
-  for(let each in playerMoves) { //TODO GET THIS TO WORK, show moves with CSS
-    document.getElementById(each.id).classList.add('playerMove');
-    console.log(document.getElementById(each.id).classList);
-  }
 }
 updateUser();
 
 /* selecting a piece */
-const tileButtons = document.getElementsByClassName('tile'); s
+const tileButtons = document.getElementsByClassName('tile'); 
 function selectPiece(){
  let piece = null;
   for(let i = 0; i < tileButtons.length; i++) {
@@ -78,15 +75,45 @@ function selectPiece(){
       const row = 8 - tileId.charAt(1);
       const col = cols.indexOf(tileId.charAt(0));
       piece = gameBoard[row][col].piece;
-  
-      if(piece === null) return;
-      playerMoves = [];   
-      piece.getMoves();
-      console.log(playerMoves); //TODO delete when done testing
+
+      const moveButtons = document.getElementsByClassName('playerMove'); 
+      
+      if(playerMoves.length > 0 && !button.classList.contains('playerMove')){
+        if(moveButtons !== undefined) { //maybe try inline CSS?
+          moveButtons.forEach((element) => {
+            element.classList.remove('playerMove');    
+          })
+        }
+      }
+      //move the piece
+      if(button.classList.contains('playerMove')) {
+        console.log('success');
+        activePiece.tile.piece = null;
+        activePiece.tile = gameBoard[row][col];
+        gameBoard[row][col].piece = activePiece;
+
+
+
+        updateUser();
+        return;
+      }
+      
+      if(piece === null) {
+        activePiece === null;
+        
+        return;
+      }
+      //collect moves if piece is on tile
+      if(piece !== null) {
+
+        playerMoves = []; 
+        piece.getMoves();
+        activePiece = piece;
+        console.log(playerMoves); //TODO delete when done testing
+      }
     }
   }
   updateUser();
-  console.log(piece);
   //TODO maintain piece
 }
 selectPiece();
