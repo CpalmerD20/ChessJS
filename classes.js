@@ -43,25 +43,77 @@ function testMove(row, col) {
     playerMoves.push(gameBoard[row][col]);
 }
 
+function removeAlliance(tile) { //TODO rook, queen, and bishop will playerMoves = moves.filter(removeAlliance)
+  return tile.piece.alliance !== this.alliance;
+}
+
+function moveRook(row, col) { 
+  for(let d = 1; d < 8; ++d){
+    const down = row + d;
+    if(outOfBounds(down)) break;
+
+    playerMoves.push(gameBoard[down][col]);
+    if(gameBoard[down][col].piece != null) break;
+  }
+  for(let u = 1; u < 8; ++u){
+    const up = row - u;
+    if(outOfBounds(up)) break;
+    
+    playerMoves.push(gameBoard[up][col]);
+    if(gameBoard[up][col].piece != null) break;
+  }
+  for(let l = 1; l < 8; ++l){
+    const left = col - l;
+    if(outOfBounds(left)) break;
+    
+    playerMoves.push(gameBoard[row][left]);
+    if(gameBoard[row][left].piece != null) break;
+  }
+  for(let r = 1; r < 8; ++r){
+    const right = col + 1;
+    if(outOfBounds(right)) break;
+    
+    playerMoves.push(gameBoard[row][right]);
+    if(gameBoard[row][right].piece != null) break;
+  }
+}
+
+function moveBishop(row, col) {
+  for(let dr = 1; dr < 8; ++dr){
+    const down = row + dr;
+    const right = col + dr;
+    if(outOfBounds(down) || outOfBounds(right)) break;
+
+    playerMoves.push(gameBoard[down][right]);
+    if(gameBoard[down][right].piece != null) break;
+  }
+}
 
 /* pieces */
-export class Pawn {
-  #name
+
+class AnyPiece {
   #alliance
   #tile
-  #icon
-  constructor(tile, color) {
-    this.#name = 'pawn';
-    this.#tile = tile;
+  constructor(tile, color){
     this.#alliance = color;
-    this.#icon = color === 'dark' ? 'asset/pawnDark.png' : 'asset/pawnLight.png';
+    this.tile = tile;
   }
-  get name() { return this.#name; }
   get alliance() { return this.#alliance; }
-  get icon() { return this.#icon; }
   get tile() { return this.#tile; }
 
   set tile(t) { this.#tile = t };
+}
+
+export class Pawn extends AnyPiece{
+  #name
+  #icon
+  constructor(tile, color) {
+    super(tile, color);
+    this.#name = 'pawn';
+    this.#icon = color === 'dark' ? 'asset/pawnDark.png' : 'asset/pawnLight.png';
+  }
+  get name() { return this.#name; }
+  get icon() { return this.#icon; }
 
   toString() {
     return `${this.name}:${this.alliance}`
@@ -73,13 +125,13 @@ export class Pawn {
     const direction = this.alliance == 'dark' ? 1 : -1;
 
     if (outOfBounds(xPosition + direction)) return;
-
-    if (this.tile.row == 7 && this.alliance == 'dark') {
-      testMove(xPosition + (direction * 2), yPosition);
-    }
-    if (this.tile.row == 2 && this.alliance == 'light') {
-      testMove(xPosition + (direction * 2), yPosition);
-    }
+    // first move both sides
+    if (xPosition == 1 && this.alliance == 'dark') 
+      testMove(xPosition + 2, yPosition);
+    if (xPosition == 6 && this.alliance == 'light') 
+      testMove(xPosition - 2, yPosition);
+    
+    // basic move
     testMove(xPosition + direction, yPosition);
 
     // check attack moves
@@ -88,5 +140,8 @@ export class Pawn {
 
     if (!outOfBounds(yPosition - 1) && !gameBoard[xPosition][yPosition - 1].piece === null)
       testMove(xPosition + direction, yPosition - 1);
+    playerMoves.forEach((tile) => {
+      document.getElementById(tile.id).classList.add('playerMove');
+    });
   }
 }
