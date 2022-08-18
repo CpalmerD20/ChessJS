@@ -266,3 +266,48 @@ export class King extends AnyPiece {
     showLegalMoves();
   }
 }
+
+export function createPieces(){
+  for(let i = 0; i < 8; i++){
+    const pawnDark = new Pawn(gameBoard[1][i], 'dark');
+    const pawnLight = new Pawn(gameBoard[6][i], 'light');
+    gameBoard[1][i].piece = pawnDark;
+    gameBoard[6][i].piece = pawnLight;
+  }
+  const knightDark01 = new Knight(gameBoard[0][1], 'dark');
+  const knightDark06 = new Knight(gameBoard[0][6], 'dark');
+  const knightLight71 = new Knight(gameBoard[7][1], 'light');
+  const knightLight76 = new Knight(gameBoard[7][6], 'light');
+  gameBoard[0][1].piece = knightDark01;
+  gameBoard[0][6].piece = knightDark06;
+  gameBoard[7][1].piece = knightLight71;
+  gameBoard[7][6].piece = knightLight76;
+
+  const rookDark00 = new Rook(gameBoard[0][0], 'dark');
+  const rookDark07 = new Rook(gameBoard[0][7], 'dark');
+  const rookLight70 = new Rook(gameBoard[7][0], 'light');
+  const rookLight77 = new Rook(gameBoard[7][7], 'light');
+  gameBoard[0][0].piece = rookDark00;
+  gameBoard[0][7].piece = rookDark07;
+  gameBoard[7][0].piece = rookLight70;
+  gameBoard[7][7].piece = rookLight77;
+
+  const bishopDark02 = new Bishop(gameBoard[0][2], 'dark');
+  const bishopDark05 = new Bishop(gameBoard[0][5], 'dark');
+  const bishopDark72 = new Bishop(gameBoard[7][2], 'light');
+  const bishopDark75 = new Bishop(gameBoard[7][5], 'light');
+  gameBoard[0][2].piece = bishopDark02;
+  gameBoard[0][5].piece = bishopDark05;
+  gameBoard[7][2].piece = bishopDark72;
+  gameBoard[7][5].piece = bishopDark75;
+
+  const queenDark03 = new Queen(gameBoard[0][3], 'dark');
+  const queenLight73 = new Queen(gameBoard[7][3], 'light');
+  gameBoard[0][3].piece = queenDark03;
+  gameBoard[7][3].piece = queenLight73;
+
+  const kingDark04 = new King(gameBoard[0][4], 'dark');
+  const kingDark74 = new King(gameBoard[7][4], 'light');
+  gameBoard[0][4].piece = kingDark04;
+  gameBoard[7][4].piece = kingDark74;
+}
