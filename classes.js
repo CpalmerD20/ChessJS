@@ -1,4 +1,4 @@
-import { rows, cols, gameBoard, playerMoves, activePiece } from "./app.js";
+import { rows, cols, gameBoard, playerMoves, activePiece } from "./appChess.js";
 
 export class Tile {
   #row
@@ -26,7 +26,8 @@ export class Tile {
   }
 }
 
-/* movement functions */
+/* movement functions 
+*/
 export let legalMoves = [];
 
 function outOfBounds(x) {
@@ -46,82 +47,82 @@ function showLegalMoves() {
 
 function testMove(row, col) {
   if (outOfBounds(row) || outOfBounds(col)) return;
-    playerMoves.push(gameBoard[row][col]);
+  playerMoves.push(gameBoard[row][col]);
 }
 
-function moveRook(row, col) { 
-  for(let d = 1; d < 8; ++d){
+function moveRook(row, col) {
+  for (let d = 1; d < 8; ++d) {
     const down = row + d;
-    if(outOfBounds(down)) break;
+    if (outOfBounds(down)) break;
 
     playerMoves.push(gameBoard[down][col]);
-    if(gameBoard[down][col].piece != null) break;
+    if (gameBoard[down][col].piece != null) break;
   }
-  for(let u = 1; u < 8; ++u){
+  for (let u = 1; u < 8; ++u) {
     const up = row - u;
-    if(outOfBounds(up)) break;
-    
+    if (outOfBounds(up)) break;
+
     playerMoves.push(gameBoard[up][col]);
-    if(gameBoard[up][col].piece != null) break;
+    if (gameBoard[up][col].piece != null) break;
   }
-  for(let l = 1; l < 8; ++l){
+  for (let l = 1; l < 8; ++l) {
     const left = col - l;
-    if(outOfBounds(left)) break;
-    
+    if (outOfBounds(left)) break;
+
     playerMoves.push(gameBoard[row][left]);
-    if(gameBoard[row][left].piece != null) break;
+    if (gameBoard[row][left].piece != null) break;
   }
-  for(let r = 1; r < 8; ++r){
+  for (let r = 1; r < 8; ++r) {
     const right = col + r;
-    if(outOfBounds(right)) break;
-    
+    if (outOfBounds(right)) break;
+
     playerMoves.push(gameBoard[row][right]);
-    if(gameBoard[row][right].piece != null) break;
+    if (gameBoard[row][right].piece != null) break;
   }
 }
 
 function moveBishop(row, col) {
-  for(let dr = 1; dr < 8; ++dr){
+  for (let dr = 1; dr < 8; ++dr) {
     const down = row + dr;
     const right = col + dr;
-    if(outOfBounds(down) || outOfBounds(right)) break;
+    if (outOfBounds(down) || outOfBounds(right)) break;
 
     playerMoves.push(gameBoard[down][right]);
-    if(gameBoard[down][right].piece != null) break;
+    if (gameBoard[down][right].piece != null) break;
   }
-  for(let dl = 1; dl < 8; ++dl) {
+  for (let dl = 1; dl < 8; ++dl) {
     const down = row + dl;
     const left = col - dl;
-    if(outOfBounds(down) || outOfBounds(left)) break;
+    if (outOfBounds(down) || outOfBounds(left)) break;
 
     playerMoves.push(gameBoard[down][left]);
-    if(gameBoard[down][left].piece != null) break;
+    if (gameBoard[down][left].piece != null) break;
   }
-  for(let ur = 1; ur < 8; ++ur){
+  for (let ur = 1; ur < 8; ++ur) {
     const up = row - ur;
     const right = col + ur;
-    if(outOfBounds(up) || outOfBounds(right)) break;
+    if (outOfBounds(up) || outOfBounds(right)) break;
 
     playerMoves.push(gameBoard[up][right]);
-    if(gameBoard[up][right].piece != null) break;
+    if (gameBoard[up][right].piece != null) break;
   }
-  for(let ul = 1; ul < 8; ++ ul){
+  for (let ul = 1; ul < 8; ++ul) {
     const up = row - ul;
     const left = col - ul;
-    if(outOfBounds(up) || outOfBounds(left)) break;
+    if (outOfBounds(up) || outOfBounds(left)) break;
 
     playerMoves.push(gameBoard[up][left]);
-    if(gameBoard[up][left].piece != null) break;
+    if (gameBoard[up][left].piece != null) break;
   }
 }
 
-/* pieces */
-
+/* game pieces 
+*/
 class AnyPiece {
   #alliance
   #tile
   #name
-  constructor(tile, color){
+  constructor(tile, color) {
     this.#alliance = color;
     this.tile = tile;
   }
@@ -129,7 +130,7 @@ class AnyPiece {
   get tile() { return this.#tile; }
   get name() { return this.#name; }
 
-  set name(n) {this.#name = n; }
+  set name(n) { this.#name = n; }
   set tile(t) { this.#tile = t; }
 
   toString() {
@@ -153,16 +154,17 @@ export class Pawn extends AnyPiece {
     const newX = xPosition + direction;
     if (outOfBounds(newX)) return;
 
-    if(gameBoard[newX][yPosition].piece === null) //basic move 
-      testMove(newX, yPosition); 
-    if (xPosition == 1 && this.alliance == 'dark') //first move dark pawns
-      testMove(xPosition + 2, yPosition);
-    if (xPosition == 6 && this.alliance == 'light') //first move light pawns
-      testMove(xPosition - 2, yPosition);
+    if (gameBoard[newX][yPosition].piece === null)
+      testMove(newX, yPosition); //basic move 
+    if ((xPosition == 1 && this.alliance == 'dark') && gameBoard[newX + 1][yPosition].piece === null)
+      testMove(xPosition + 2, yPosition); //first move dark pawns
+    if ((xPosition == 6 && this.alliance == 'light') && gameBoard[newX - 1][yPosition].piece === null)
+      testMove(xPosition - 2, yPosition); //first move light pawns
+    /* attack moves */
     if (!outOfBounds(yPosition + 1) && gameBoard[newX][yPosition + 1].piece !== null)
-      testMove(newX, yPosition + 1); //attack move right
+      testMove(newX, yPosition + 1);
     if (!outOfBounds(yPosition - 1) && gameBoard[newX][yPosition - 1].piece !== null)
-      testMove(newX, yPosition - 1); //attack move left
+      testMove(newX, yPosition - 1);
     showLegalMoves();
   }
 }
@@ -179,14 +181,14 @@ export class Knight extends AnyPiece {
   getMoves() {
     const yPosition = cols.indexOf(this.tile.col);
     const xPosition = rows.indexOf(this.tile.row);
-    testMove(xPosition +1, yPosition +2);
-    testMove(xPosition +1, yPosition -2);
-    testMove(xPosition +2, yPosition +1);
-    testMove(xPosition +2, yPosition -1);
-    testMove(xPosition -1, yPosition +2);
-    testMove(xPosition -1, yPosition -2);
-    testMove(xPosition -2, yPosition +1);
-    testMove(xPosition -2, yPosition -1);
+    testMove(xPosition + 1, yPosition + 2);
+    testMove(xPosition + 1, yPosition - 2);
+    testMove(xPosition + 2, yPosition + 1);
+    testMove(xPosition + 2, yPosition - 1);
+    testMove(xPosition - 1, yPosition + 2);
+    testMove(xPosition - 1, yPosition - 2);
+    testMove(xPosition - 2, yPosition + 1);
+    testMove(xPosition - 2, yPosition - 1);
     showLegalMoves();
   }
 }
@@ -205,7 +207,7 @@ export class Rook extends AnyPiece {
     const xPosition = rows.indexOf(this.tile.row);
     moveRook(xPosition, yPosition);
     showLegalMoves();
-  }  
+  }
 }
 
 export class Bishop extends AnyPiece {
@@ -255,20 +257,20 @@ export class King extends AnyPiece {
   getMoves() {
     const yPosition = cols.indexOf(this.tile.col);
     const xPosition = rows.indexOf(this.tile.row);
-    testMove(xPosition +1, yPosition +1);
-    testMove(xPosition +1, yPosition -1);
-    testMove(xPosition +1, yPosition);
-    testMove(xPosition -1, yPosition);
-    testMove(xPosition -1, yPosition +1);
-    testMove(xPosition -1, yPosition -1);
-    testMove(xPosition, yPosition +1);
-    testMove(xPosition, yPosition -1);
+    testMove(xPosition + 1, yPosition + 1);
+    testMove(xPosition + 1, yPosition - 1);
+    testMove(xPosition + 1, yPosition);
+    testMove(xPosition - 1, yPosition);
+    testMove(xPosition - 1, yPosition + 1);
+    testMove(xPosition - 1, yPosition - 1);
+    testMove(xPosition, yPosition + 1);
+    testMove(xPosition, yPosition - 1);
     showLegalMoves();
   }
 }
 
-export function createPieces(){
-  for(let i = 0; i < 8; i++){
+export function createPieces() {
+  for (let i = 0; i < 8; i++) {
     const pawnDark = new Pawn(gameBoard[1][i], 'dark');
     const pawnLight = new Pawn(gameBoard[6][i], 'light');
     gameBoard[1][i].piece = pawnDark;
